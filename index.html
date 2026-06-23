@@ -278,7 +278,7 @@
         // --- HELPERS ---
 
         function getImageHTML(src, alt) {
-            return `<img src="${src}" alt="${alt}" class="w-full h-full object-cover object-center" onerror="this.onerror=null; this.src='https://placehold.co/400x400/e2e8f0/475569?text=Image+Missing';"/>`;
+            return `<img src="${src}" alt="${alt}" class="w-full h-full object-contain object-center p-2" onerror="this.onerror=null; this.src='https://placehold.co/400x400/e2e8f0/475569?text=Image+Missing';"/>`;
         }
 
         const audioPlayerHTML = `
@@ -335,15 +335,14 @@
                         </div>
                     </div>
                 `,
-                illustration: getImageHTML('1559c089-d2f8-445c-8c20-80653b3d30e9.png', 'Free to Be Me Cover')
+                illustration: getImageHTML('Book Cover.png', 'Free to Be Me Cover')
             },
             {
                 type: 'text',
                 bgColor: 'bg-rose-50',
                 content: getTextHTML([
                     "I was not born to be a copy,<br/>creased and pressed into a line.<br/>I was not made to wear a mask<br/>and call another person’s face mine.",
-                    "I was not shaped to disappear,<br/>to lower my eyes,<br/>to swallow my sound,<br/>to fold up my fire<br/>just to keep the peace around.",
-                    "The world may ask me,<br/>“Can you blend in?”<br/>“Can you tone that color down?”<br/>“Can you trade your truth away<br/>for a safer kind of crown?”"
+                    "I was not shaped to disappear,<br/>to lower my eyes,<br/>to swallow my sound,<br/>to fold up my fire<br/>just to keep the peace around."
                 ]),
                 illustration: SvgOrigami
             },
@@ -351,6 +350,7 @@
                 type: 'text',
                 bgColor: 'bg-amber-50',
                 content: getTextHTML([
+                    "The world may ask me,<br/>“Can you blend in?”<br/>“Can you tone that color down?”<br/>“Can you trade your truth away<br/>for a safer kind of crown?”",
                     "But I am not here<br/>to vanish quietly.",
                     "I have a name<br/>that deserves to be spoken.<br/>I have a voice<br/>that deserves to be heard.",
                     "I have a story<br/>still rising in me,<br/>line by line,<br/>word by word."
@@ -361,15 +361,14 @@
                 type: 'affirmation',
                 bgColor: 'bg-rose-50',
                 content: getAffirmationHTML('Affirmation', 'I am proud to be myself.', 'border-rose-400', 'text-rose-400'),
-                illustration: getImageHTML('0ce27914-bbab-4edc-b9a8-26f52df38853.png', 'I am proud to be myself')
+                illustration: getImageHTML('I am Proud to be myself.png', 'I am proud to be myself')
             },
             {
                 type: 'text',
                 bgColor: 'bg-sky-50',
                 content: getTextHTML([
                     "Some days, being yourself feels scary.",
-                    "People may laugh.<br/>People may stare.<br/>People may whisper<br/>from across the room,<br/>trying to plant little shadows<br/>where your confidence blooms.",
-                    "But a bird does not ask the sky<br/>if its wings are allowed to fly.<br/>A river does not beg the earth<br/>for the right to pass on by."
+                    "People may laugh.<br/>People may stare.<br/>People may whisper<br/>from across the room,<br/>trying to plant little shadows<br/>where your confidence blooms."
                 ]),
                 illustration: SvgSunClouds
             },
@@ -377,6 +376,7 @@
                 type: 'text',
                 bgColor: 'bg-indigo-50',
                 content: getTextHTML([
+                    "But a bird does not ask the sky<br/>if its wings are allowed to fly.<br/>A river does not beg the earth<br/>for the right to pass on by.",
                     "The sun does not shrink<br/>when clouds complain,<br/>and thunder does not apologize<br/>for speaking through the rain.",
                     "So I will not shrink either.<br/>I will stand in my skin.<br/>I will breathe in my name.<br/>I will walk through the world<br/>without bowing to shame."
                 ]),
@@ -386,15 +386,14 @@
                 type: 'affirmation',
                 bgColor: 'bg-amber-50',
                 content: getAffirmationHTML('Affirmation', 'I do not have to be small to make others comfortable.', 'border-amber-400', 'text-amber-500'),
-                illustration: getImageHTML('c44b6f9b-2200-412e-a210-ccddef78a75c.png', 'I do not have to be small')
+                illustration: getImageHTML('I do not have to be small to make others comfortable.png', 'I do not have to be small')
             },
             {
                 type: 'text',
                 bgColor: 'bg-slate-100',
                 content: getTextHTML([
                     "I will not chase every trend<br/>that runs wild through the hall,<br/>wearing borrowed confidence<br/>and calling it cool for all.",
-                    "I will not let popularity<br/>become my only guide.<br/>I will not let rumors<br/>be the ruler of my stride.",
-                    "Not likes.<br/>Not laughs.<br/>Not clothes.<br/>Not phones.<br/>Not whispers.<br/>Not crowds.<br/>Not sitting alone.<br/>None of these<br/>get to measure my life."
+                    "I will not let popularity<br/>become my only guide.<br/>I will not let rumors<br/>be the ruler of my stride."
                 ]),
                 illustration: SvgCompass
             },
@@ -402,6 +401,7 @@
                 type: 'text',
                 bgColor: 'bg-emerald-50',
                 content: getTextHTML([
+                    "Not likes.<br/>Not laughs.<br/>Not clothes.<br/>Not phones.<br/>Not whispers.<br/>Not crowds.<br/>Not sitting alone.<br/>None of these<br/>get to measure my life.",
                     "I can admire somebody else<br/>without abandoning me.<br/>I can clap for their shine<br/>and still let my own light be.",
                     "I can belong<br/>without becoming a copy.<br/>I can be kind<br/>without becoming quiet.<br/>I can stand in the room<br/>with my own brave spirit<br/>and not deny it."
                 ]),
@@ -411,7 +411,7 @@
                 type: 'affirmation',
                 bgColor: 'bg-emerald-50',
                 content: getAffirmationHTML('Affirmation', 'I choose who I am over who they want me to be.', 'border-emerald-400', 'text-emerald-500'),
-                illustration: getImageHTML('0a2e7fe6-c392-4cdd-902f-d2323051feac.png', 'I choose who I am')
+                illustration: getImageHTML('I choose who I am over who they want me to be.png', 'I choose who I am')
             },
             {
                 type: 'text',
@@ -438,7 +438,7 @@
                 type: 'affirmation',
                 bgColor: 'bg-orange-50',
                 content: getAffirmationHTML('Affirmation', 'My voice matters, even when it shakes.', 'border-orange-400', 'text-orange-500'),
-                illustration: getImageHTML('49c4ace5-0330-42f0-8543-0ad8ff36144c.png', 'My voice matters')
+                illustration: getImageHTML('My voice matters even when it shakes.png', 'My voice matters')
             },
             {
                 type: 'text',
@@ -463,7 +463,7 @@
                 type: 'affirmation',
                 bgColor: 'bg-green-50',
                 content: getAffirmationHTML('Affirmation', 'I am growing, and I am enough today.', 'border-green-500', 'text-green-600'),
-                illustration: getImageHTML('98cc1f9c-df9f-4b81-ac2c-c55460078030.png', 'I am growing')
+                illustration: getImageHTML('I am growing an I am enough today.png', 'I am growing')
             },
             {
                 type: 'text',
@@ -489,7 +489,7 @@
                 type: 'affirmation',
                 bgColor: 'bg-violet-50',
                 content: getAffirmationHTML('Affirmation', 'Nobody can be me better than me.', 'border-violet-400', 'text-violet-500'),
-                illustration: getImageHTML('ChatGPT Image Jun 22, 2026, 08_24_54 PM.png', 'Nobody can be me better than me')
+                illustration: getImageHTML('Nobody can be me better than me.png', 'Nobody can be me better than me')
             },
             {
                 type: 'text',
@@ -516,7 +516,7 @@
                 type: 'affirmation',
                 bgColor: 'bg-blue-100',
                 content: getAffirmationHTML('Final Affirmation', 'I am free to be me.', 'border-sky-400', 'text-sky-500', true),
-                illustration: getImageHTML('ChatGPT Image Jun 22, 2026, 08_23_42 PM.png', 'I am free to be me')
+                illustration: getImageHTML('I am free to be me.png', 'I am free to be me')
             }
         ];
 
