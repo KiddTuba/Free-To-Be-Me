@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Me Is A Freedom Song - Interactive Book</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .font-serif {
+            font-family: 'Merriweather', serif;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.6s ease-out forwards;
+        }
+
+        /* Container transitions */
+        #app-container {
+            transition: background-color 0.7s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="app-container" class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 transition-colors duration-700 ease-in-out bg-slate-50">
+        
+        <!-- Book Container -->
+        <div class="relative w-full max-w-6xl bg-white/40 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/50 flex flex-col md:flex-row min-h-[80vh] md:min-h-[600px]">
+            
+            <!-- Left Side (Text content) -->
+            <div class="flex-1 p-8 md:p-16 flex flex-col justify-center overflow-y-auto">
+                <div id="page-content" class="animate-fade-in transition-opacity duration-500">
+                    <!-- Dynamic content injected here -->
+                </div>
+            </div>
+
+            <!-- Right Side (Illustration) -->
+            <div class="flex-1 bg-white/60 p-8 md:p-12 flex items-center justify-center border-t md:border-t-0 md:border-l border-white/50">
+                <div id="page-illustration" class="w-full max-w-[400px] aspect-square rounded-2xl overflow-hidden shadow-inner bg-white animate-scale-in flex items-center justify-center">
+                    <!-- Dynamic illustration injected here -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="flex items-center justify-between w-full max-w-xl mt-8 px-4">
+            <button id="btn-prev" class="flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all bg-white text-slate-700 shadow-md hover:shadow-lg hover:-translate-x-1 active:scale-95 opacity-0 cursor-default" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                Previous
+            </button>
+
+            <div id="page-indicator" class="text-slate-500 font-semibold tracking-widest text-sm">
+                1 / 20
+            </div>
+
+            <button id="btn-next" class="flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all bg-indigo-600 text-white shadow-md hover:shadow-lg hover:bg-indigo-700 hover:translate-x-1 active:scale-95">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- ICONS & SVGS ---
+        const iconSparkles = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>`;
+        const iconMusic = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+
+        const SvgOrigami = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#f8fafc" rx="20" />
+                <polygon points="50,50 100,50 100,100 50,100" fill="#cbd5e1" />
+                <polygon points="300,80 350,80 350,130 300,130" fill="#cbd5e1" />
+                <polygon points="80,300 130,300 130,350 80,350" fill="#cbd5e1" />
+                <polygon points="280,280 330,280 330,330 280,330" fill="#cbd5e1" />
+                <g transform="translate(150, 150) scale(1.2)">
+                    <polygon points="0,50 40,0 80,50" fill="#f43f5e" />
+                    <polygon points="0,50 80,50 40,100" fill="#e11d48" />
+                    <polygon points="40,0 -20,-20 0,50" fill="#fb7185" />
+                    <polygon points="80,50 120,30 40,100" fill="#be123c" />
+                </g>
+            </svg>`;
+
+        const SvgNature = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#e0f2fe" rx="20" />
+                <path d="M 0 250 Q 100 200 200 250 T 400 250 L 400 400 L 0 400 Z" fill="#38bdf8" />
+                <path d="M 0 280 Q 150 240 250 280 T 400 280 L 400 400 L 0 400 Z" fill="#0284c7" />
+                <circle cx="320" cy="80" r="40" fill="#fde047" />
+                <g transform="translate(120, 100)">
+                    <path d="M0,20 Q30,-10 60,20 Q30,5 0,20" fill="#0f172a" />
+                    <path d="M60,20 Q90,-10 120,20 Q90,5 60,20" fill="#0f172a" />
+                </g>
+            </svg>`;
+
+        const SvgSunClouds = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#fef3c7" rx="20" />
+                <circle cx="200" cy="200" r="80" fill="#f59e0b" />
+                <path d="M 50 150 Q 80 120 120 150 Q 150 130 180 160 Q 150 180 120 180 Q 80 180 50 150 Z" fill="#ffffff" opacity="0.8" />
+                <path d="M 350 250 Q 320 220 280 250 Q 250 230 220 260 Q 250 280 280 280 Q 320 280 350 250 Z" fill="#ffffff" opacity="0.8" />
+                <path d="M 100 300 Q 130 270 170 300 Q 200 280 230 310 Q 200 330 170 330 Q 130 330 100 300 Z" fill="#ffffff" opacity="0.8" />
+            </svg>`;
+
+        const SvgMirror = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#fff1f2" rx="20" />
+                <ellipse cx="200" cy="200" rx="100" ry="140" fill="#ffe4e6" stroke="#fb7185" stroke-width="8" />
+                <circle cx="200" cy="150" r="40" fill="#f43f5e" />
+                <path d="M 140 280 Q 200 200 260 280 Z" fill="#f43f5e" />
+                <path d="M 180 100 L 190 80 L 210 90 L 195 105 Z" fill="#fde047" />
+                <path d="M 250 150 L 270 140 L 280 160 L 260 165 Z" fill="#fde047" />
+                <path d="M 120 200 L 100 190 L 110 170 L 125 185 Z" fill="#fde047" />
+            </svg>`;
+
+        const SvgCompass = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#f3f4f6" rx="20" />
+                <circle cx="200" cy="200" r="120" fill="none" stroke="#94a3b8" stroke-width="8" />
+                <circle cx="200" cy="200" r="100" fill="#ffffff" />
+                <polygon points="200,110 220,200 200,290 180,200" fill="#cbd5e1" />
+                <polygon points="200,110 220,200 200,200" fill="#3b82f6" />
+                <polygon points="200,200 180,200 200,110" fill="#60a5fa" />
+                <circle cx="200" cy="200" r="10" fill="#1e293b" />
+                <polygon points="320,60 330,80 350,85 335,100 340,120 320,110 300,120 305,100 290,85 310,80" fill="#fbbf24" />
+            </svg>`;
+
+        const SvgTrees = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#ecfdf5" rx="20" />
+                <polygon points="100,180 130,100 160,180" fill="#a7f3d0" />
+                <rect x="125" y="180" width="10" height="30" fill="#d1d5db" />
+                <polygon points="300,220 330,140 360,220" fill="#a7f3d0" />
+                <rect x="325" y="220" width="10" height="30" fill="#d1d5db" />
+                <polygon points="250,150 280,70 310,150" fill="#a7f3d0" />
+                <rect x="275" y="150" width="10" height="30" fill="#d1d5db" />
+                <circle cx="200" cy="200" r="60" fill="#10b981" />
+                <circle cx="170" cy="180" r="40" fill="#34d399" />
+                <circle cx="230" cy="180" r="40" fill="#34d399" />
+                <rect x="190" y="250" width="20" height="60" fill="#78350f" rx="4" />
+            </svg>`;
+
+        const SvgSpark = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#faf5ff" rx="20" />
+                <path d="M 180 350 L 180 200 Q 180 180 190 180 Q 200 180 200 200 L 200 350 Z" fill="#d8b4fe" />
+                <path d="M 160 350 L 160 220 Q 160 200 170 200 Q 180 200 180 220 L 180 350 Z" fill="#c084fc" />
+                <path d="M 200 350 L 200 210 Q 200 190 210 190 Q 220 190 220 210 L 220 350 Z" fill="#a855f7" />
+                <path d="M 220 350 L 220 240 Q 220 220 230 220 Q 240 220 240 240 L 240 350 Z" fill="#9333ea" />
+                <circle cx="200" cy="120" r="20" fill="#fbbf24" />
+                <path d="M 200 80 L 200 50" stroke="#fbbf24" stroke-width="6" stroke-linecap="round" />
+                <path d="M 200 160 L 200 190" stroke="#fbbf24" stroke-width="6" stroke-linecap="round" />
+                <path d="M 160 120 L 130 120" stroke="#fbbf24" stroke-width="6" stroke-linecap="round" />
+                <path d="M 240 120 L 270 120" stroke="#fbbf24" stroke-width="6" stroke-linecap="round" />
+            </svg>`;
+
+        const SvgHeartWaves = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#fff7ed" rx="20" />
+                <path d="M 200 280 C 200 280 100 200 100 140 C 100 90 150 70 200 120 C 250 70 300 90 300 140 C 300 200 200 280 200 280 Z" fill="#f97316" />
+                <circle cx="200" cy="180" r="140" fill="none" stroke="#fdba74" stroke-width="4" stroke-dasharray="10 10" opacity="0.6"/>
+                <circle cx="200" cy="180" r="180" fill="none" stroke="#fed7aa" stroke-width="4" stroke-dasharray="15 15" opacity="0.4"/>
+            </svg>`;
+
+        const SvgMosaic = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#fdf4ff" rx="20" />
+                <g transform="translate(80, 100) rotate(45)">
+                    <rect x="0" y="0" width="20" height="80" fill="#fbbf24" />
+                    <polygon points="0,80 20,80 10,110" fill="#fcd34d" />
+                    <polygon points="5,100 15,100 10,110" fill="#1e293b" />
+                    <rect x="0" y="-10" width="20" height="10" fill="#f87171" />
+                </g>
+                <polygon points="250,80 220,160 260,160 230,240 300,130 250,130" fill="#eab308" />
+                <rect x="80" y="240" width="60" height="40" fill="#3b82f6" rx="4" />
+                <line x1="90" y1="250" x2="130" y2="250" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+                <line x1="90" y1="265" x2="120" y2="265" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+                <circle cx="280" cy="300" r="40" fill="#ec4899" />
+                <circle cx="260" cy="290" r="10" fill="#ffffff" />
+                <circle cx="290" cy="280" r="10" fill="#ffffff" />
+                <circle cx="300" cy="310" r="10" fill="#ffffff" />
+            </svg>`;
+
+        const SvgSprout = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#f0fdf4" rx="20" />
+                <path d="M 0 320 L 400 320 L 400 400 L 0 400 Z" fill="#166534" />
+                <path d="M 200 320 Q 180 200 200 150" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round" />
+                <path d="M 200 250 Q 150 250 130 200 Q 160 180 200 250 Z" fill="#4ade80" />
+                <path d="M 195 180 Q 260 180 280 120 Q 240 100 195 180 Z" fill="#4ade80" />
+            </svg>`;
+
+        const SvgPuzzle = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#eff6ff" rx="20" />
+                <rect x="50" y="50" width="140" height="140" fill="#dbeafe" rx="10" />
+                <rect x="210" y="50" width="140" height="140" fill="#bfdbfe" rx="10" />
+                <rect x="50" y="210" width="140" height="140" fill="#93c5fd" rx="10" />
+                <g transform="translate(210, 210)">
+                    <rect x="0" y="0" width="140" height="140" fill="#3b82f6" rx="10" />
+                    <circle cx="70" cy="-20" r="30" fill="#3b82f6" />
+                    <circle cx="-20" cy="70" r="30" fill="#3b82f6" />
+                    <circle cx="70" cy="70" r="20" fill="#60a5fa" />
+                </g>
+            </svg>`;
+
+        const SvgMusic = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#f8fafc" rx="20" />
+                <path d="M 0 150 Q 100 100 200 150 T 400 150" fill="none" stroke="#cbd5e1" stroke-width="4" />
+                <path d="M 0 200 Q 100 150 200 200 T 400 200" fill="none" stroke="#cbd5e1" stroke-width="4" />
+                <path d="M 0 250 Q 100 200 200 250 T 400 250" fill="none" stroke="#cbd5e1" stroke-width="4" />
+                <g transform="translate(100, 150)">
+                    <ellipse cx="0" cy="40" rx="15" ry="10" fill="#8b5cf6" transform="rotate(-20 0 40)" />
+                    <line x1="12" y1="40" x2="12" y2="-20" stroke="#8b5cf6" stroke-width="4" />
+                    <path d="M 12 -20 Q 30 -20 40 0" fill="none" stroke="#8b5cf6" stroke-width="4" />
+                </g>
+                <g transform="translate(250, 100)">
+                    <ellipse cx="0" cy="40" rx="15" ry="10" fill="#a855f7" transform="rotate(-20 0 40)" />
+                    <ellipse cx="50" cy="30" rx="15" ry="10" fill="#a855f7" transform="rotate(-20 50 30)" />
+                    <line x1="12" y1="40" x2="12" y2="-10" stroke="#a855f7" stroke-width="4" />
+                    <line x1="62" y1="30" x2="62" y2="-20" stroke="#a855f7" stroke-width="4" />
+                    <line x1="10" y1="-10" x2="64" y2="-20" stroke="#a855f7" stroke-width="8" />
+                </g>
+            </svg>`;
+
+        const SvgSunrise = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#ffedd5" rx="20" />
+                <circle cx="200" cy="250" r="100" fill="#f97316" />
+                <polygon points="0,400 150,250 400,400" fill="#1e293b" />
+                <polygon points="0,400 100,280 250,400" fill="#334155" />
+                <rect x="145" y="220" width="10" height="40" fill="#0f172a" />
+                <circle cx="150" cy="210" r="8" fill="#0f172a" />
+            </svg>`;
+
+        const SvgBirdsFlying = `
+            <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="400" fill="#e0f2fe" rx="20" />
+                <circle cx="200" cy="200" r="150" fill="#ffffff" opacity="0.5" />
+                <g transform="translate(100, 250) scale(0.5)">
+                    <path d="M0,20 Q30,-10 60,20 Q30,5 0,20" fill="#0284c7" />
+                    <path d="M60,20 Q90,-10 120,20 Q90,5 60,20" fill="#0284c7" />
+                </g>
+                <g transform="translate(180, 180) scale(0.7)">
+                    <path d="M0,20 Q30,-10 60,20 Q30,5 0,20" fill="#0ea5e9" />
+                    <path d="M60,20 Q90,-10 120,20 Q90,5 60,20" fill="#0ea5e9" />
+                </g>
+                <g transform="translate(260, 100) scale(1)">
+                    <path d="M0,20 Q30,-10 60,20 Q30,5 0,20" fill="#38bdf8" />
+                    <path d="M60,20 Q90,-10 120,20 Q90,5 60,20" fill="#38bdf8" />
+                </g>
+            </svg>`;
+
+        // --- HELPERS ---
+
+        function getImageHTML(src, alt) {
+            return `<img src="${src}" alt="${alt}" class="w-full h-full object-cover object-center" onerror="this.onerror=null; this.src='https://placehold.co/400x400/e2e8f0/475569?text=Image+Missing';"/>`;
+        }
+
+        const audioPlayerHTML = `
+            <div class="bg-indigo-50 p-5 md:p-6 rounded-2xl border border-indigo-100 flex flex-col gap-4 mt-8">
+                <div class="flex items-start gap-4">
+                    <div class="bg-indigo-100 p-3 rounded-full text-indigo-600 shrink-0">
+                        ${iconMusic}
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-indigo-500 uppercase tracking-wider mb-2">Class sings</p>
+                        <p class="text-lg md:text-xl italic text-slate-700 font-serif font-bold leading-relaxed">
+                            "But I want to be free, free, free<br/>
+                            And I just got to be me, me, me"
+                        </p>
+                    </div>
+                </div>
+                <audio controls src="Free.wav" class="w-full mt-2 outline-none h-10 rounded-full"></audio>
+            </div>
+        `;
+
+        function getAffirmationHTML(label, text, borderColorClass, textColorClass, isFinal = false) {
+            return `
+                <div class="flex flex-col justify-center h-full space-y-8">
+                    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border-l-8 ${borderColorClass} ${isFinal ? 'scale-105 transform shadow-xl' : ''}">
+                        <p class="text-sm font-bold ${textColorClass} uppercase tracking-wider mb-3">${label}</p>
+                        <p class="text-3xl md:text-4xl font-bold text-slate-800 leading-tight">
+                            ${text}
+                        </p>
+                    </div>
+                    ${audioPlayerHTML}
+                </div>
+            `;
+        }
+
+        function getTextHTML(paragraphs) {
+            const pTags = paragraphs.map(p => `<p>${p}</p>`).join('');
+            return `<div class="space-y-6 text-xl md:text-2xl font-serif text-slate-700 leading-relaxed">${pTags}</div>`;
+        }
+
+        const spreads = [
+            {
+                type: 'cover',
+                bgColor: 'bg-slate-50',
+                content: `
+                    <div class="flex flex-col items-center justify-center h-full text-center space-y-6">
+                        <h1 class="text-5xl md:text-6xl font-serif font-bold text-slate-800 leading-tight">
+                            Free to Be Me
+                        </h1>
+                        <p class="text-xl md:text-2xl text-slate-600 italic">[An Affirmation Poem with Class Chorus]</p>
+                        <div class="flex items-center gap-2 text-indigo-500 mt-8">
+                            ${iconSparkles}
+                            <span class="font-semibold uppercase tracking-widest text-sm">Open to Read</span>
+                            ${iconSparkles}
+                        </div>
+                    </div>
+                `,
+                illustration: getImageHTML('1559c089-d2f8-445c-8c20-80653b3d30e9.png', 'Free to Be Me Cover')
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-rose-50',
+                content: getTextHTML([
+                    "I was not born to be a copy,<br/>creased and pressed into a line.<br/>I was not made to wear a mask<br/>and call another person’s face mine.",
+                    "I was not shaped to disappear,<br/>to lower my eyes,<br/>to swallow my sound,<br/>to fold up my fire<br/>just to keep the peace around.",
+                    "The world may ask me,<br/>“Can you blend in?”<br/>“Can you tone that color down?”<br/>“Can you trade your truth away<br/>for a safer kind of crown?”"
+                ]),
+                illustration: SvgOrigami
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-amber-50',
+                content: getTextHTML([
+                    "But I am not here<br/>to vanish quietly.",
+                    "I have a name<br/>that deserves to be spoken.<br/>I have a voice<br/>that deserves to be heard.",
+                    "I have a story<br/>still rising in me,<br/>line by line,<br/>word by word."
+                ]),
+                illustration: SvgNature
+            },
+            {
+                type: 'affirmation',
+                bgColor: 'bg-rose-50',
+                content: getAffirmationHTML('Affirmation', 'I am proud to be myself.', 'border-rose-400', 'text-rose-400'),
+                illustration: getImageHTML('0ce27914-bbab-4edc-b9a8-26f52df38853.png', 'I am proud to be myself')
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-sky-50',
+                content: getTextHTML([
+                    "Some days, being yourself feels scary.",
+                    "People may laugh.<br/>People may stare.<br/>People may whisper<br/>from across the room,<br/>trying to plant little shadows<br/>where your confidence blooms.",
+                    "But a bird does not ask the sky<br/>if its wings are allowed to fly.<br/>A river does not beg the earth<br/>for the right to pass on by."
+                ]),
+                illustration: SvgSunClouds
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-indigo-50',
+                content: getTextHTML([
+                    "The sun does not shrink<br/>when clouds complain,<br/>and thunder does not apologize<br/>for speaking through the rain.",
+                    "So I will not shrink either.<br/>I will stand in my skin.<br/>I will breathe in my name.<br/>I will walk through the world<br/>without bowing to shame."
+                ]),
+                illustration: SvgMirror
+            },
+            {
+                type: 'affirmation',
+                bgColor: 'bg-amber-50',
+                content: getAffirmationHTML('Affirmation', 'I do not have to be small to make others comfortable.', 'border-amber-400', 'text-amber-500'),
+                illustration: getImageHTML('c44b6f9b-2200-412e-a210-ccddef78a75c.png', 'I do not have to be small')
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-slate-100',
+                content: getTextHTML([
+                    "I will not chase every trend<br/>that runs wild through the hall,<br/>wearing borrowed confidence<br/>and calling it cool for all.",
+                    "I will not let popularity<br/>become my only guide.<br/>I will not let rumors<br/>be the ruler of my stride.",
+                    "Not likes.<br/>Not laughs.<br/>Not clothes.<br/>Not phones.<br/>Not whispers.<br/>Not crowds.<br/>Not sitting alone.<br/>None of these<br/>get to measure my life."
+                ]),
+                illustration: SvgCompass
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-emerald-50',
+                content: getTextHTML([
+                    "I can admire somebody else<br/>without abandoning me.<br/>I can clap for their shine<br/>and still let my own light be.",
+                    "I can belong<br/>without becoming a copy.<br/>I can be kind<br/>without becoming quiet.<br/>I can stand in the room<br/>with my own brave spirit<br/>and not deny it."
+                ]),
+                illustration: SvgTrees
+            },
+            {
+                type: 'affirmation',
+                bgColor: 'bg-emerald-50',
+                content: getAffirmationHTML('Affirmation', 'I choose who I am over who they want me to be.', 'border-emerald-400', 'text-emerald-500'),
+                illustration: getImageHTML('0a2e7fe6-c392-4cdd-902f-d2323051feac.png', 'I choose who I am')
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-purple-50',
+                content: getTextHTML([
+                    "Freedom is not always loud.",
+                    "Sometimes freedom<br/>is a trembling hand<br/>raised high in the air.",
+                    "Sometimes freedom<br/>is telling the truth<br/>when nobody else dares.",
+                    "Sometimes freedom<br/>is singing the note<br/>when your voice starts to shake.<br/>Sometimes freedom<br/>is choosing your dream<br/>when the road starts to quake."
+                ]),
+                illustration: SvgSpark
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-pink-50',
+                content: getTextHTML([
+                    "Sometimes freedom<br/>is saying no<br/>when the crowd says yes.<br/>Sometimes freedom<br/>is saying yes<br/>to the hope in your chest.",
+                    "And each time I choose courage,<br/>each time I stand tall,<br/>I gather up pieces of myself<br/>I thought I had lost in the fall.",
+                    "I become more whole.<br/>I become more true.<br/>I become more able<br/>to do what I was born to do."
+                ]),
+                illustration: SvgHeartWaves
+            },
+            {
+                type: 'affirmation',
+                bgColor: 'bg-orange-50',
+                content: getAffirmationHTML('Affirmation', 'My voice matters, even when it shakes.', 'border-orange-400', 'text-orange-500'),
+                illustration: getImageHTML('49c4ace5-0330-42f0-8543-0ad8ff36144c.png', 'My voice matters')
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-fuchsia-50',
+                content: getTextHTML([
+                    "So let me be the quiet kid<br/>with thunder in my pencil.<br/>Let me be the loud kid<br/>with gold in my laughter.",
+                    "Let me be the dreamer,<br/>the helper,<br/>the thinker,<br/>the builder,<br/>the artist,<br/>the athlete,<br/>the reader,<br/>the leader,<br/>the child still learning<br/>what comes after."
+                ]),
+                illustration: SvgMosaic
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-green-50',
+                content: getTextHTML([
+                    "Let me be the question<br/>that keeps reaching for the sky.<br/>Let me be the answer<br/>that takes time to know why.",
+                    "I do not have to be finished<br/>to be valuable.<br/>I do not have to be perfect<br/>to be powerful.",
+                    "I am still growing.<br/>I am still becoming.<br/>I am still hearing<br/>my own heart drumming.<br/>And that is enough<br/>for today."
+                ]),
+                illustration: SvgSprout
+            },
+            {
+                type: 'affirmation',
+                bgColor: 'bg-green-50',
+                content: getAffirmationHTML('Affirmation', 'I am growing, and I am enough today.', 'border-green-500', 'text-green-600'),
+                illustration: getImageHTML('98cc1f9c-df9f-4b81-ac2c-c55460078030.png', 'I am growing')
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-blue-50',
+                content: getTextHTML([
+                    "There is room in this world<br/>for my rhythm.<br/>There is room in this world<br/>for my questions.",
+                    "There is room in this world<br/>for my laughter,<br/>my silence,<br/>my culture,<br/>my kindness,<br/>my dreams,<br/>my difference.",
+                    "There is room for the way<br/>I walk through the day.<br/>There is room for the words<br/>I still need to say."
+                ]),
+                illustration: SvgPuzzle
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-orange-100',
+                content: getTextHTML([
+                    "I was not created<br/>to fade in the crowd.<br/>I was not created<br/>to make my spirit less loud.",
+                    "I was created<br/>to bring something bright,<br/>something brave,<br/>something honest,<br/>something full of light.",
+                    "Something only I can carry.<br/>Something only I can see.<br/>Something only I can offer<br/>by being fully me."
+                ]),
+                illustration: SvgSunrise
+            },
+            {
+                type: 'affirmation',
+                bgColor: 'bg-violet-50',
+                content: getAffirmationHTML('Affirmation', 'Nobody can be me better than me.', 'border-violet-400', 'text-violet-500'),
+                illustration: getImageHTML('ChatGPT Image Jun 22, 2026, 08_24_54 PM.png', 'Nobody can be me better than me')
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-teal-50',
+                content: getTextHTML([
+                    "And when the world asks,<br/>“Who do you think you are?”<br/>I will not answer with fear.",
+                    "I will stand tall enough<br/>for my own heart to hear.",
+                    "I will answer with my choices.<br/>I will answer with my song.<br/>I will answer with the courage<br/>I have carried all along."
+                ]),
+                illustration: SvgMusic
+            },
+            {
+                type: 'text',
+                bgColor: 'bg-sky-100',
+                content: getTextHTML([
+                    "I am me.<br/>I am becoming.<br/>I am worthy.<br/>I am free<br/>from the fear<br/>of being different.",
+                    "I choose my voice.<br/>I choose my way.<br/>I choose my light<br/>at the start of each day.",
+                    "I choose my truth.<br/>I choose my dream.<br/>I choose the person<br/>I was always meant to be.",
+                    "And no laugh,<br/>no crowd,<br/>no trend,<br/>no fear,<br/>gets to take that freedom<br/>away from here."
+                ]),
+                illustration: SvgBirdsFlying
+            },
+            {
+                type: 'affirmation',
+                bgColor: 'bg-blue-100',
+                content: getAffirmationHTML('Final Affirmation', 'I am free to be me.', 'border-sky-400', 'text-sky-500', true),
+                illustration: getImageHTML('ChatGPT Image Jun 22, 2026, 08_23_42 PM.png', 'I am free to be me')
+            }
+        ];
+
+        let currentPage = 0;
+
+        const container = document.getElementById('app-container');
+        const contentDiv = document.getElementById('page-content');
+        const illustrationDiv = document.getElementById('page-illustration');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const pageIndicator = document.getElementById('page-indicator');
+
+        function renderPage() {
+            const spread = spreads[currentPage];
+
+            // Update background color
+            container.className = `min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 transition-colors duration-700 ease-in-out ${spread.bgColor}`;
+
+            // Reset animation by triggering reflow
+            contentDiv.classList.remove('animate-fade-in');
+            illustrationDiv.classList.remove('animate-scale-in');
+            void contentDiv.offsetWidth; 
+            void illustrationDiv.offsetWidth;
+
+            // Inject content
+            contentDiv.innerHTML = spread.content;
+            illustrationDiv.innerHTML = spread.illustration;
+
+            // Add animation classes back
+            contentDiv.classList.add('animate-fade-in');
+            illustrationDiv.classList.add('animate-scale-in');
+
+            // Update Page Indicator
+            pageIndicator.textContent = `${currentPage + 1} / ${spreads.length}`;
+
+            // Update Previous Button
+            if (currentPage === 0) {
+                btnPrev.disabled = true;
+                btnPrev.classList.add('opacity-0', 'cursor-default');
+                btnPrev.classList.remove('bg-white', 'text-slate-700', 'shadow-md', 'hover:shadow-lg', 'hover:-translate-x-1', 'active:scale-95');
+            } else {
+                btnPrev.disabled = false;
+                btnPrev.classList.remove('opacity-0', 'cursor-default');
+                btnPrev.classList.add('bg-white', 'text-slate-700', 'shadow-md', 'hover:shadow-lg', 'hover:-translate-x-1', 'active:scale-95');
+            }
+
+            // Update Next Button
+            if (currentPage === spreads.length - 1) {
+                btnNext.disabled = true;
+                btnNext.classList.add('opacity-0', 'cursor-default');
+                btnNext.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            } else {
+                btnNext.disabled = false;
+                btnNext.classList.remove('opacity-0', 'cursor-default');
+                btnNext.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            }
+
+            // Optional: Pause any playing audio when page turns
+            const audios = document.querySelectorAll('audio');
+            audios.forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+        }
+
+        btnPrev.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                renderPage();
+            }
+        });
+
+        btnNext.addEventListener('click', () => {
+            if (currentPage < spreads.length - 1) {
+                currentPage++;
+                renderPage();
+            }
+        });
+
+        // Initial render
+        renderPage();
+    </script>
+</body>
+</html>
